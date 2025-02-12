@@ -53,9 +53,9 @@ docker-compose up --build
 
 При первом запуске проекта, система автоматически создает пользователя по умолчанию:
 
-**Email: **[admin@example.com](mailto:admin@example.com)
+**Email:** admin@example.com
 
-**Пароль: adminpassword**
+**Пароль:** strongpassword
 
 Используйте эти данные для первого входа в систему. После входа рекомендуется изменить пароль через интерфейс приложения.
 
