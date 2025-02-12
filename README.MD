@@ -29,11 +29,11 @@
 **Клонируйте репозиторий:**
 
 ```
-git clone <URL_репозитория>
-cd <директория_проекта>
+git clone https://github.com/TohaRodiv/microservices-todov2.git todov2
+cd todov2
 ```
 
-**Создайте файл **.env** в корневой директории проекта и добавьте необходимые переменные окружения (если требуется).**
+**Создайте файл **.env** в корневой директории проекта и добавьте необходимые переменные окружения (если требуется) (не требуется).**
 
 **Запустите проект с помощью Docker Compose:**
 
@@ -45,15 +45,9 @@ docker-compose up --build
 
 **После успешного запуска, сервисы будут доступны по следующим адресам:**
 
-**Frontend: **[http://localhost](http://localhost/)
+**Frontend: **[http://localhost](http://localhost/):8080
 
-**API Gateway: **[http://localhost:8080](http://localhost:8080/)
-
-**Auth Service: **[http://localhost:8080/auth](http://localhost:8080/auth)
-
-**Todo Service: **[http://localhost:8080/todos](http://localhost:8080/todos)
-
-**User Service: **[http://localhost:8080/users](http://localhost:8080/users)
+**API Gateway: **[http://localhost](http://localhost:8080/):80
 
 ##### Данные для авторизации по умолчанию
 
