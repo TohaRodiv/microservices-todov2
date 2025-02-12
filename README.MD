@@ -97,7 +97,7 @@ docker-compose up --build
 
 **Обновите переменные окружения в файле **.env** для production.**
 
-**Запустите: **docker-compose -f docker-compose.prod.yml up --build
+**Запустите: **docker-compose -f docker-compose.prod.yml up -d --build
 
 ##### Устранение неполадок
 
