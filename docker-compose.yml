@@ -1,0 +1,141 @@
+services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    volumes:
+      - ./api-gateway:/app
+      - /app/node_modules
+    ports:
+      - "80:3000"
+    depends_on:
+      - auth-service
+      - todo-service
+      - user-service
+    environment:
+      - NODE_ENV=development
+      - AUTH_SERVICE_URL=http://auth-service:3000
+      - TODO_SERVICE_URL=http://todo-service:3000
+      - USER_SERVICE_URL=http://user-service:3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http = require('http'); const options = { hostname: 'localhost', port: 3000, path: '/healthcheck', timeout: 2000 }; const req = http.request(options, (res) => { if (res.statusCode == 200) { process.exit(0); } process.exit(1); }); req.on('error', () => { process.exit(1); }); req.end();"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./auth-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    expose:
+      - "3000"
+    depends_on:
+      - user-service
+    restart: unless-stopped
+    networks:
+      - microservices-network
+
+  todo-service:
+    container_name: todo-service
+    build:
+      context: ./todo-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./todo-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://admin:todopassword@postgres:5432/tododb
+    expose:
+      - "3000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - microservices-network
+
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./user-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/userdb
+    expose:
+      - "3000"
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - microservices-network
+
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=userdb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=tododb
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=todopassword
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d tododb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-network
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - microservices-network
+
+volumes:
+  mongodb_data:
+  postgres_data:
+
+networks:
+  microservices-network:
+    driver: bridge
