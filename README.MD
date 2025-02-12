@@ -38,7 +38,7 @@ cd todov2
 **Запустите проект с помощью Docker Compose:**
 
 ```
-docker-compose up --build
+docker-compose up -d --build
 ```
 
  Это соберет и запустит все сервисы, включая frontend, базы данных и API Gateway.
